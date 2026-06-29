@@ -3,53 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KPSS Pusula — Genel Kültür Cebinde</title>
-<meta name="description" content="KPSS Pusula: Genel Kültür konu anlatımı, interaktif Türkiye haritası, kişisel notlar ve PDF. Çevrimdışı çalışır.">
+<title>KPSS Pusula — Genel Kültür Konu Anlatımı, Harita ve Test</title>
+<meta name="description" content="KPSS Pusula: Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler konu anlatımı, interaktif Türkiye haritası, testler ve notlar. Web'de ücretsiz dene veya uygulamayı indir.">
 <link rel="icon" href="icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="hero">
-    <img class="icon" src="icon.png" alt="KPSS Pusula">
-    <h1>KPSS Pusula</h1>
-    <p class="tag">Genel Kültür cebinde — konu, harita, not ve PDF</p>
-    <div class="badges">
-      <span class="badge">📚 35+ Konu</span>
-      <span class="badge">🗺️ İnteraktif Harita</span>
-      <span class="badge">📝 Notlar &amp; PDF</span>
-      <span class="badge">✓ Çevrimdışı</span>
+
+<nav class="nav">
+  <a class="brand" href="./"><img src="icon.png" alt="">KPSS Pusula</a>
+  <div class="links">
+    <a href="app/#tarih">Tarih</a>
+    <a href="app/#cografya">Coğrafya</a>
+    <a href="app/#vatandaslik">Vatandaşlık</a>
+    <a href="app/#guncel">Güncel</a>
+    <a class="cta" href="app/">Uygulamayı Aç</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <img class="icon" src="icon.png" alt="KPSS Pusula">
+  <h1>KPSS Pusula</h1>
+  <p class="tag">Genel Kültür cebinde — konu anlatımı, harita, test ve notlar</p>
+  <div class="badges">
+    <span class="badge">📚 40 Konu</span>
+    <span class="badge">🗺️ İnteraktif Harita</span>
+    <span class="badge">🎯 Testler</span>
+    <span class="badge">✓ Çevrimdışı</span>
+  </div>
+  <a class="cta-big" href="app/">🚀 Web'de Ücretsiz Dene</a>
+</header>
+
+<main class="wrap">
+
+  <section id="dersler">
+    <h2>Dersler</h2>
+    <div class="subjects">
+      <a class="subj" href="app/#tarih">
+        <div class="em" style="background:linear-gradient(135deg,#F59E0B,#F97316)">📜</div>
+        <h3>Tarih</h3><span>İlk Türkler → Cumhuriyet</span>
+      </a>
+      <a class="subj" href="app/#cografya">
+        <div class="em" style="background:linear-gradient(135deg,#10B981,#14B8A6)">🌍</div>
+        <h3>Coğrafya</h3><span>Konum, iklim, harita</span>
+      </a>
+      <a class="subj" href="app/#vatandaslik">
+        <div class="em" style="background:linear-gradient(135deg,#6366F1,#7C3AED)">⚖️</div>
+        <h3>Vatandaşlık</h3><span>Anayasa ve hukuk</span>
+      </a>
+      <a class="subj" href="app/#guncel">
+        <div class="em" style="background:linear-gradient(135deg,#EC4899,#EF4444)">🗞️</div>
+        <h3>Güncel</h3><span>Güncel bilgiler</span>
+      </a>
     </div>
-    <a href="app/" style="display:inline-block;margin-top:22px;background:#fff;color:#4F46E5;font-weight:800;
-      font-size:16px;text-decoration:none;padding:14px 28px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.18)">
-      🚀 Web'de Hemen Dene
-    </a>
-  </header>
+  </section>
 
-  <main class="wrap">
-    <section>
-      <h2>Özellikler</h2>
-      <div class="grid">
-        <div class="feat"><div class="ico">📚</div><h3>Konu Anlatımı</h3><p>Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler — sade dille, tuzaklar ve özetlerle.</p></div>
-        <div class="feat"><div class="ico">🗺️</div><h3>İnteraktif Türkiye Haritası</h3><p>81 il ve sınırlarıyla; bölgeler, iklim, göller, dağlar, akarsular, madenler, tarım ve bitki örtüsü katmanları.</p></div>
-        <div class="feat"><div class="ico">🔍</div><h3>Hızlı Arama</h3><p>Tüm konularda kelime/başlık ara, tek dokunuşla ilgili konuya git.</p></div>
-        <div class="feat"><div class="ico">📝</div><h3>Notlarım</h3><p>Kendi özet notlarını oluştur, düzenle ve sakla — hepsi cihazında.</p></div>
-        <div class="feat"><div class="ico">📄</div><h3>PDF'lerim</h3><p>Kendi PDF'lerini yükle, oku, içinde kelime ara ve sayfaya not ekle.</p></div>
-        <div class="feat"><div class="ico">📶</div><h3>Çevrimdışı</h3><p>İnternet gerekmez; hızlı ve hafif arayüz.</p></div>
-      </div>
-    </section>
-
-    <section>
-      <h2>Hakkında</h2>
-      <p style="color:var(--soft);font-size:15.5px">KPSS Pusula, KPSS Genel Kültür hazırlığını kolaylaştırmak için hazırlanmış bağımsız bir çalışma uygulamasıdır. Konuları okuyabilir, Türkiye haritası üzerinden görerek tekrar edebilir, kendi notlarını ve PDF'lerini cihazında saklayabilirsin.</p>
-    </section>
-  </main>
-
-  <footer>
-    <div>
-      <a href="gizlilik.html">Gizlilik Politikası</a> ·
-      <a href="kullanim.html">Kullanım Şartları</a>
+  <section>
+    <h2>Özellikler</h2>
+    <div class="grid">
+      <div class="feat"><div class="ico">📚</div><h3>Konu Anlatımı</h3><p>Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler — sade dille, tuzaklar ve özetlerle.</p></div>
+      <div class="feat"><div class="ico">🗺️</div><h3>İnteraktif Türkiye Haritası</h3><p>81 il; bölgeler, iklim, göller, dağlar, tarım, hayvancılık ve madenler katmanlarıyla. İle dokun, bilgisi açılsın.</p></div>
+      <div class="feat"><div class="ico">🎯</div><h3>Testler</h3><p>Her konudan sorular; doğru-yanlış açıklamalı, tek dokunuşla ilgili konuya git.</p></div>
+      <div class="feat"><div class="ico">🔍</div><h3>Hızlı Arama</h3><p>Tüm konularda kelime ara, geçtiği satıra zıpla.</p></div>
+      <div class="feat"><div class="ico">📝</div><h3>Notlarım</h3><p>Kendi özet notlarını oluştur, düzenle ve sakla.</p></div>
+      <div class="feat"><div class="ico">🏕️</div><h3>Kamp Modu</h3><p>Sınav geri sayımı, çalışma planı, zamanlayıcı ve gün serisiyle motivasyon.</p></div>
     </div>
-    <p style="margin-top:14px">© 2026 KPSS Pusula · Hasan Mertkan Fırlar</p>
-  </footer>
+  </section>
+
+  <section>
+    <h2>Hakkında</h2>
+    <p style="color:var(--soft);font-size:15.5px">KPSS Pusula, KPSS Genel Kültür hazırlığını kolaylaştırmak için hazırlanmış bağımsız bir çalışma uygulamasıdır. Konuları okuyabilir, Türkiye haritası üzerinden tekrar edebilir, testlerle kendini sınayabilir ve kendi notlarını cihazında saklayabilirsin. Hemen <a href="app/">web sürümünü</a> deneyebilirsin.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    <a href="gizlilik.html">Gizlilik Politikası</a> ·
+    <a href="kullanim.html">Kullanım Şartları</a>
+  </div>
+  <p style="margin-top:14px">© 2026 KPSS Pusula · Hasan Mertkan Fırlar</p>
+</footer>
+
 </body>
 </html>

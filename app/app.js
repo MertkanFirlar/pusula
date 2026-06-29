@@ -319,6 +319,11 @@
     tabsEl.innerHTML = tabs.map(function (t) { return '<button class="tab" data-t="' + t[0] + '"><span class="ic">' + t[1] + '</span>' + t[2] + '</button>'; }).join('');
     Array.prototype.forEach.call(tabsEl.children, function (c) { c.onclick = function () { openTab(c.dataset.t); }; });
     openTab('konular');
+    // Ana sayfadan ders linkiyle gelindiyse (app/#tarih) o dersi aç
+    var hs = (location.hash || '').replace('#', '');
+    if (hs && DATA.content.some(function (s) { return s.key === hs; })) {
+      push(function () { renderTopicList(hs); });
+    }
   }).catch(function (e) {
     view.innerHTML = '<p class="muted">Veri yüklenemedi: ' + e + '</p>';
   });
