@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KPSS Pusula — Genel Kültür Konu Anlatımı, Harita ve Test</title>
-<meta name="description" content="KPSS Pusula: Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler konu anlatımı, interaktif Türkiye haritası, testler ve notlar. Web'de ücretsiz dene veya uygulamayı indir.">
+<title>KPSS Pusula — Genel Kültür Konu Anlatımı, Harita, Test ve Deneme</title>
+<meta name="description" content="KPSS Pusula: Tarih, Coğrafya, Vatandaşlık ve Güncel konu anlatımı, interaktif Türkiye haritası, 500+ orijinal soru, 10 deneme sınavı ve Hızlı Tekrar. Web'de ücretsiz dene.">
+<meta name="theme-color" content="#4F46E5">
+<meta property="og:title" content="KPSS Pusula — Genel Kültür cebinde">
+<meta property="og:description" content="Konu anlatımı, interaktif harita, 500+ soru, 10 deneme ve Hızlı Tekrar. Web'de ücretsiz dene.">
+<meta property="og:image" content="feature.png">
+<meta property="og:type" content="website">
 <link rel="icon" href="icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -13,76 +18,136 @@
 <nav class="nav">
   <a class="brand" href="./"><img src="icon.png" alt="">KPSS Pusula</a>
   <div class="links">
-    <a href="app/#tarih">Tarih</a>
-    <a href="app/#cografya">Coğrafya</a>
-    <a href="app/#vatandaslik">Vatandaşlık</a>
-    <a href="app/#guncel">Güncel</a>
-    <a class="cta" href="app/">Uygulamayı Aç</a>
+    <a href="#dersler">Dersler</a>
+    <a href="#ozellikler">Özellikler</a>
+    <a href="#tekrar">Hızlı Tekrar</a>
+    <a class="cta" href="app/">Web'de Aç</a>
   </div>
 </nav>
 
 <header class="hero">
-  <img class="icon" src="icon.png" alt="KPSS Pusula">
-  <h1>KPSS Pusula</h1>
-  <p class="tag">Genel Kültür cebinde — konu anlatımı, harita, test ve notlar</p>
-  <div class="badges">
-    <span class="badge">📚 40 Konu</span>
-    <span class="badge">🗺️ İnteraktif Harita</span>
-    <span class="badge">🎯 Testler</span>
-    <span class="badge">✓ Çevrimdışı</span>
+  <div class="hero-inner">
+    <img class="icon" src="icon.png" alt="KPSS Pusula">
+    <h1>KPSS Genel Kültür,<br><span class="grad-text">cebinde.</span></h1>
+    <p class="tag">Konu anlatımı, interaktif Türkiye haritası, 500+ soru, deneme sınavları ve Hızlı Tekrar — tek uygulamada, çevrimdışı.</p>
+    <div class="hero-cta">
+      <a class="btn-primary" href="app/">Web'de Ücretsiz Dene</a>
+      <a class="btn-ghost" href="#ozellikler">Özellikleri Gör</a>
+    </div>
+    <div class="badges">
+      <span class="badge">Çevrimdışı çalışır</span>
+      <span class="badge">Reklamlar sınırlı</span>
+      <span class="badge">Ücretsiz</span>
+    </div>
   </div>
-  <a class="cta-big" href="app/">🚀 Web'de Ücretsiz Dene</a>
 </header>
+
+<div class="stats-band">
+  <div class="stat"><b>500+</b><span>Orijinal soru</span></div>
+  <div class="stat"><b>40</b><span>Konu anlatımı</span></div>
+  <div class="stat"><b>81</b><span>İl · interaktif harita</span></div>
+  <div class="stat"><b>10</b><span>Deneme sınavı</span></div>
+</div>
 
 <main class="wrap">
 
   <section id="dersler">
-    <h2>Dersler</h2>
+    <div class="sec-head"><h2>Dersler</h2><p>Genel Kültür'ün dört alanı, sade dille ve tuzak uyarılarıyla.</p></div>
     <div class="subjects">
-      <a class="subj" href="app/#tarih">
-        <div class="em" style="background:linear-gradient(135deg,#F59E0B,#F97316)">📜</div>
-        <h3>Tarih</h3><span>İlk Türkler → Cumhuriyet</span>
+      <a class="subj" style="--g1:#F59E0B;--g2:#F97316" href="app/#tarih">
+        <div class="em">
+          <svg viewBox="0 0 24 24"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/></svg>
+        </div>
+        <h3>Tarih</h3><span>İlk Türkler → Osmanlı → Cumhuriyet</span>
       </a>
-      <a class="subj" href="app/#cografya">
-        <div class="em" style="background:linear-gradient(135deg,#10B981,#14B8A6)">🌍</div>
-        <h3>Coğrafya</h3><span>Konum, iklim, harita</span>
+      <a class="subj" style="--g1:#10B981;--g2:#14B8A6" href="app/#cografya">
+        <div class="em">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>
+        </div>
+        <h3>Coğrafya</h3><span>Konum, iklim, yer şekilleri, ekonomi</span>
       </a>
-      <a class="subj" href="app/#vatandaslik">
-        <div class="em" style="background:linear-gradient(135deg,#6366F1,#7C3AED)">⚖️</div>
-        <h3>Vatandaşlık</h3><span>Anayasa ve hukuk</span>
+      <a class="subj" style="--g1:#6366F1;--g2:#7C3AED" href="app/#vatandaslik">
+        <div class="em">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Vatandaşlık</h3><span>Anayasa, yasama, yürütme, yargı</span>
       </a>
-      <a class="subj" href="app/#guncel">
-        <div class="em" style="background:linear-gradient(135deg,#EC4899,#EF4444)">🗞️</div>
-        <h3>Güncel</h3><span>Güncel bilgiler</span>
+      <a class="subj" style="--g1:#EC4899;--g2:#EF4444" href="app/#guncel">
+        <div class="em">
+          <svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+        </div>
+        <h3>Güncel</h3><span>Güncel bilgiler ve rekortmenler</span>
       </a>
     </div>
   </section>
 
-  <section>
-    <h2>Özellikler</h2>
+  <section id="ozellikler">
+    <div class="sec-head"><h2>Neler var?</h2><p>Okumaktan sınamaya, haritadan kampa — çalışmanın her adımı.</p></div>
     <div class="grid">
-      <div class="feat"><div class="ico">📚</div><h3>Konu Anlatımı</h3><p>Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler — sade dille, tuzaklar ve özetlerle.</p></div>
-      <div class="feat"><div class="ico">🗺️</div><h3>İnteraktif Türkiye Haritası</h3><p>81 il; bölgeler, iklim, göller, dağlar, tarım, hayvancılık ve madenler katmanlarıyla. İle dokun, bilgisi açılsın.</p></div>
-      <div class="feat"><div class="ico">🎯</div><h3>Testler</h3><p>Her konudan sorular; doğru-yanlış açıklamalı, tek dokunuşla ilgili konuya git.</p></div>
-      <div class="feat"><div class="ico">🔍</div><h3>Hızlı Arama</h3><p>Tüm konularda kelime ara, geçtiği satıra zıpla.</p></div>
-      <div class="feat"><div class="ico">📝</div><h3>Notlarım</h3><p>Kendi özet notlarını oluştur, düzenle ve sakla.</p></div>
-      <div class="feat"><div class="ico">🏕️</div><h3>Kamp Modu</h3><p>Sınav geri sayımı, çalışma planı, zamanlayıcı ve gün serisiyle motivasyon.</p></div>
+      <div class="feat">
+        <div class="ico i-book"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h3>Konu Anlatımı</h3><p>40 konu; günlük dille, <b>🔑 kritik bilgi</b> ve <b>🪤 tuzak</b> uyarılarıyla, kalıcı öğrenme için özetlerle.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-map"><svg viewBox="0 0 24 24"><path d="M1 6 8 2l8 4 7-4v16l-7 4-8-4-7 4z"/><path d="M8 2v16M16 6v16"/></svg></div>
+        <h3>İnteraktif Türkiye Haritası</h3><p>81 il; bölgeler, iklim, göller, dağlar, tarım, madenler katmanları. İle dokun, bilgisi açılsın; <b>harita testi</b> ile kendini sına.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-target"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <h3>500+ Soru & Test</h3><p>Ders ders veya karışık test; her soru açıklamalı ve <b>tek dokunuşla ilgili konunun tam satırına</b> götürür.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-exam"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg></div>
+        <h3>10 Deneme Sınavı</h3><p>Gerçek KPSS dağılımıyla 60 soruluk denemeler. <b>Netin ve yanlışların kaydedilir</b>; yanlıştan konuya git.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-refresh"><svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg></div>
+        <h3>Hızlı Tekrar</h3><p>Dönemleri tek ekranda özetle: İslam öncesi, Beylikler, <b>36 Osmanlı padişahı</b>, Milli Mücadele, Coğrafya ve Vatandaşlık.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-camp"><svg viewBox="0 0 24 24"><path d="M3.5 21 14 3M20.5 21 10 3M15.5 21 12 15l-3.5 6M2 21h20"/></svg></div>
+        <h3>Kamp Modu</h3><p>Sınav geri sayımı, çalışma planı, pomodoro zamanlayıcı, gün serisi ve tur takibi — hepsi düzenli iki sekmede.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-edit"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+        <h3>Kişiselleştir</h3><p>Bilgiyi düzelt, <b>kendi konunu ekle</b>, haritaya kendi notunu bırak — istediğinde orijinaline geri al.</p>
+      </div>
+      <div class="feat">
+        <div class="ico i-file"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div>
+        <h3>PDF & Notlar</h3><p>Kendi PDF'ini ekle, içinde ara, sayfaya not tut; konu özetlerini Notlarım'da sakla.</p>
+      </div>
     </div>
   </section>
 
-  <section>
-    <h2>Hakkında</h2>
-    <p style="color:var(--soft);font-size:15.5px">KPSS Pusula, KPSS Genel Kültür hazırlığını kolaylaştırmak için hazırlanmış bağımsız bir çalışma uygulamasıdır. Konuları okuyabilir, Türkiye haritası üzerinden tekrar edebilir, testlerle kendini sınayabilir ve kendi notlarını cihazında saklayabilirsin. Hemen <a href="app/">web sürümünü</a> deneyebilirsin.</p>
+  <section id="tekrar" class="showcase">
+    <div class="showcase-text">
+      <span class="pill">Hızlı Tekrar</span>
+      <h2>Koca dönemleri<br>tek ekranda topla.</h2>
+      <p>Sınav öncesi son tekrar için tasarlandı. Açılır kartlarla İslam öncesi Türk devletlerinden 36 Osmanlı padişahına, Milli Mücadele'den Türkiye coğrafyasına kadar en çok sorulanları hızlıca gözden geçir. <b>⭐ = çok sorulan.</b></p>
+      <a class="btn-primary sm" href="app/">Hemen Dene</a>
+    </div>
+    <div class="showcase-img">
+      <div class="frame"><img src="feature.png" alt="KPSS Pusula ekranları"></div>
+    </div>
+  </section>
+
+  <section id="hakkinda">
+    <div class="sec-head"><h2>Hakkında</h2></div>
+    <p class="about">KPSS Pusula, KPSS Genel Kültür hazırlığını kolaylaştırmak için hazırlanmış bağımsız bir çalışma uygulamasıdır. Konuları okuyabilir, Türkiye haritası üzerinden tekrar edebilir, 500+ soru ve deneme sınavıyla kendini ölçebilir, kendi notlarını cihazında saklayabilirsin. Her şey <b>çevrimdışı</b> çalışır. Hemen <a href="app/">web sürümünü</a> deneyebilirsin.</p>
   </section>
 
 </main>
 
 <footer>
-  <div>
+  <div class="foot-cta">
+    <h3>Çalışmaya bugün başla.</h3>
+    <a class="btn-primary" href="app/">Web'de Ücretsiz Dene</a>
+  </div>
+  <div class="foot-links">
     <a href="gizlilik.html">Gizlilik Politikası</a> ·
     <a href="kullanim.html">Kullanım Şartları</a>
   </div>
-  <p style="margin-top:14px">© 2026 KPSS Pusula · Hasan Mertkan Fırlar</p>
+  <p class="copy">© 2026 KPSS Pusula · Hasan Mertkan Fırlar</p>
 </footer>
 
 </body>
