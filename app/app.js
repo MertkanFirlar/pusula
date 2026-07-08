@@ -63,7 +63,8 @@
   /* ---------- Router ---------- */
   function setBar(title, sub, withBack, right) {
     appbar.innerHTML = '<div class="row">' +
-      (withBack ? '<button class="back" id="bk">‹</button>' : '') +
+      (withBack ? '<button class="back" id="bk">‹</button>'
+                : '<a class="back home" href="../" title="Ana sayfa">🏠</a>') +
       '<div style="flex:1;min-width:0"><h1>' + title + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div>' +
       (right ? '<button class="barbtn" id="barright">' + right.label + '</button>' : '') +
       '</div>';
