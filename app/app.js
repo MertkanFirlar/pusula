@@ -61,11 +61,14 @@
   }
 
   /* ---------- Router ---------- */
-  function setBar(title, sub, withBack) {
+  function setBar(title, sub, withBack, right) {
     appbar.innerHTML = '<div class="row">' +
       (withBack ? '<button class="back" id="bk">‹</button>' : '') +
-      '<div><h1>' + title + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div></div>';
+      '<div style="flex:1;min-width:0"><h1>' + title + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div>' +
+      (right ? '<button class="barbtn" id="barright">' + right.label + '</button>' : '') +
+      '</div>';
     if (withBack) document.getElementById('bk').onclick = goBack;
+    if (right) document.getElementById('barright').onclick = right.onClick;
   }
   function goBack() { navStack.pop(); var f = navStack[navStack.length - 1]; if (f) f(); else openTab(tab); window.scrollTo(0, 0); }
   function openTab(t) {
@@ -113,7 +116,10 @@
   }
   function renderTopic(skey, idx, jump) {
     var s = DATA.content.find(function (x) { return x.key === skey; }); var st = sj(skey); var t = s.topics[idx];
-    setBar(st.l + ' · ' + (idx + 1) + '/' + s.topics.length, '', true);
+    setBar(st.l + ' · ' + (idx + 1) + '/' + s.topics.length, '', true, {
+      label: '📝 Not',
+      onClick: function () { openNotePanel(t.title, skey + '#' + idx); }
+    });
     view.innerHTML = '<div class="wrap"><div class="topic" id="tc">' + md(t.body) + '</div>' +
       '<button class="btn" id="addnote" style="width:100%;margin-top:14px">📌 Bu konuyu Notlarım\'a ekle</button>' +
       '<div class="btnrow">' +
@@ -279,27 +285,113 @@
     var h = '<div class="wrap">';
     if (!l.length) h += '<p class="muted">📝 Henüz notun yok.<br>Konuları okurken "📌 Notlarım\'a ekle" ile kaydet ya da aşağıdan yeni not oluştur.</p>';
     l.forEach(function (n) {
-      h += '<div class="note" data-n="' + n.id + '"><div class="nt">' + esc(n.title || 'Başlıksız') + '</div>' + (n.body ? '<div class="nb">' + esc(n.body).slice(0, 220) + '</div>' : '') + '</div>';
+      var prev = n.html ? stripHtml(n.html) : (n.body || '');
+      h += '<div class="note" data-n="' + n.id + '"><div class="nt">' + esc(n.title || 'Başlıksız') + '</div>' + (prev ? '<div class="nb">' + esc(prev).slice(0, 220) + '</div>' : '') + '</div>';
     });
     h += '</div><button class="fab" id="newn">＋ Yeni Not</button>';
     view.innerHTML = h;
     document.getElementById('newn').onclick = function () { push(function () { editNote(null); }); };
     Array.prototype.forEach.call(view.querySelectorAll('[data-n]'), function (el) {
-      el.onclick = function () { var n = getNotes().find(function (x) { return x.id === el.dataset.n; }); push(function () { editNote(n); }); };
+      el.onclick = function () { var n = getNotes().find(function (x) { return x.id === el.dataset.n; }); if (n && n.key) openNotePanel(n.title, n.key); else push(function () { editNote(n); }); };
     });
   }
   function editNote(n) {
     setBar(n ? 'Notu Düzenle' : 'Yeni Not', null, true);
     view.innerHTML = '<div class="wrap"><input class="f" id="nt" placeholder="Başlık" value="' + (n ? esc(n.title) : '') + '"><textarea class="f" id="nb" placeholder="Not..." style="margin-top:10px">' + (n ? esc(n.body) : '') + '</textarea>' +
-      '<div class="btnrow"><button class="btn" id="sv">Kaydet</button>' + (n ? '<button class="btn ghost" id="del">Sil</button>' : '') + '</div></div>';
+      '<div class="btnrow"><button class="btn" id="sv">Kaydet</button><button class="btn ghost" id="pdf">📄 PDF</button>' + (n ? '<button class="btn ghost" id="del">Sil</button>' : '') + '</div></div>';
     document.getElementById('sv').onclick = function () {
       var l = getNotes(), title = document.getElementById('nt').value, body = document.getElementById('nb').value;
       if (n) { var x = l.find(function (i) { return i.id === n.id; }); if (x) { x.title = title; x.body = body; x.ts = Date.now(); } }
       else l.unshift({id: 'n' + Date.now(), title: title, body: body, ts: Date.now()});
       setNotes(l); navStack.pop(); renderNotes();
     };
+    document.getElementById('pdf').onclick = function () {
+      downloadNotePDF(document.getElementById('nt').value, esc(document.getElementById('nb').value).replace(/\n/g, '<br>'));
+    };
     var d = document.getElementById('del');
     if (d) d.onclick = function () { setNotes(getNotes().filter(function (i) { return i.id !== n.id; })); navStack.pop(); renderNotes(); };
+  }
+  function downloadNotePDF(title, html) {
+    var w = window.open('', '_blank');
+    if (!w) { toast('Açılır pencereye izin ver'); return; }
+    var t = esc(title || 'Not'), b = (html && html.trim()) ? html : '<span style="color:#9aa0b4">(boş not)</span>';
+    var ds = new Date().toLocaleDateString('tr-TR', {day: 'numeric', month: 'long', year: 'numeric'});
+    w.document.write(
+      '<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>' + t + '</title><style>' +
+      '@page{margin:18mm}' +
+      'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#1E2138;line-height:1.62;max-width:720px;margin:0 auto;padding:26px}' +
+      '.brand{display:flex;align-items:center;gap:9px;color:#5B4FE6;font-weight:800;font-size:15px;border-bottom:2px solid #ECEAF6;padding-bottom:13px;margin-bottom:22px}' +
+      '.dot{width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,#4F46E5,#7C3AED)}' +
+      'h1{font-size:25px;margin:0 0 6px}.date{color:#697086;font-size:13px;margin-bottom:24px}' +
+      '.body{font-size:15.5px}.foot{margin-top:36px;border-top:1px solid #ECEAF6;padding-top:12px;color:#9aa0b4;font-size:12px}' +
+      '.bar{margin-top:26px}.bar button{background:#4F46E5;color:#fff;border:none;padding:12px 24px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer}' +
+      '@media print{.bar{display:none}}' +
+      '</style></head><body>' +
+      '<div class="brand"><span class="dot"></span>KPSS Pusula · Notlarım</div>' +
+      '<h1>' + t + '</h1><div class="date">' + ds + '</div><div class="body">' + b + '</div>' +
+      '<div class="foot">KPSS Pusula ile oluşturuldu</div>' +
+      '<div class="bar"><button onclick="window.print()">📄 PDF olarak kaydet</button></div>' +
+      '</body></html>'
+    );
+    w.document.close();
+    setTimeout(function () { try { w.focus(); w.print(); } catch (e) {} }, 500);
+  }
+  function stripHtml(h) { var d = document.createElement('div'); d.innerHTML = h || ''; return d.textContent || ''; }
+  function saveTopicNote(key, title, html) {
+    var l = getNotes(), x = l.find(function (n) { return n.key === key; });
+    if (x) { x.html = html; x.title = title; x.ts = Date.now(); }
+    else l.unshift({id: 'n' + Date.now(), key: key, title: title, html: html, ts: Date.now()});
+    setNotes(l);
+  }
+  /* Konu okurken yandan kayan zengin not çekmecesi (glass) */
+  function openNotePanel(title, key) {
+    var existing = getNotes().find(function (n) { return n.key === key; });
+    var COLS = ['#E11D48', '#EA580C', '#CA8A04', '#16A34A', '#2563EB', '#7C3AED', '#111827'];
+    var sw = COLS.map(function (c) { return '<button class="sw" data-col="' + c + '" style="background:' + c + '"></button>'; }).join('');
+    var p = document.createElement('div');
+    p.className = 'notepanel';
+    p.innerHTML =
+      '<div class="np-back"></div><div class="np-sheet">' +
+      '<div class="np-head"><div class="np-title">📝 <span>Notum</span></div><button class="np-x" aria-label="Kapat">✕</button></div>' +
+      '<div class="np-tt">' + esc(title) + '</div>' +
+      '<div class="np-tools">' +
+        '<select class="np-sel"><option value="P">Normal</option><option value="H2">Başlık</option><option value="H3">Alt başlık</option></select>' +
+        '<span class="np-sep"></span>' +
+        '<button data-c="bold" title="Kalın"><b>B</b></button>' +
+        '<button data-c="italic" title="İtalik"><i>I</i></button>' +
+        '<button data-c="under" title="Altı çizili"><u>U</u></button>' +
+        '<button data-c="ul" title="Liste">•</button>' +
+        '<span class="np-sep"></span>' +
+        '<span class="np-cols">' + sw + '</span>' +
+      '</div>' +
+      '<div class="np-surface"><div class="np-editor" contenteditable="true" data-ph="Buraya yaz… metni seçip biçimlendir">' + (existing ? existing.html : '') + '</div></div>' +
+      '<div class="np-meta"><span class="np-wc"></span><span class="np-saved"></span></div>' +
+      '<div class="np-foot"><button class="np-pdf">📄 PDF</button><button class="np-save">Kaydet</button></div>' +
+      '</div>';
+    document.body.appendChild(p);
+    requestAnimationFrame(function () { p.classList.add('open'); });
+    var editor = p.querySelector('.np-editor'), wc = p.querySelector('.np-wc'), saved = p.querySelector('.np-saved');
+    function count() { var t = editor.innerText.trim(); wc.textContent = (t ? t.split(/\s+/).length : 0) + ' kelime'; }
+    count();
+    editor.addEventListener('input', function () { count(); saved.textContent = ''; });
+    function close() { p.classList.remove('open'); setTimeout(function () { p.remove(); }, 300); }
+    p.querySelector('.np-x').onclick = close;
+    var sel = p.querySelector('.np-sel');
+    sel.onchange = function () { editor.focus(); document.execCommand('formatBlock', false, sel.value); sel.value = 'P'; };
+    Array.prototype.forEach.call(p.querySelectorAll('.np-tools button'), function (btn) {
+      btn.onmousedown = function (e) { e.preventDefault(); }; // seçim kaybolmasın
+      btn.onclick = function () {
+        editor.focus();
+        var c = btn.dataset.c, col = btn.dataset.col;
+        if (col) document.execCommand('foreColor', false, col);
+        else if (c === 'bold') document.execCommand('bold');
+        else if (c === 'italic') document.execCommand('italic');
+        else if (c === 'under') document.execCommand('underline');
+        else if (c === 'ul') document.execCommand('insertUnorderedList');
+      };
+    });
+    p.querySelector('.np-save').onclick = function () { saveTopicNote(key, title, editor.innerHTML); saved.textContent = '✓ Kaydedildi'; toast('📝 Not kaydedildi'); };
+    p.querySelector('.np-pdf').onclick = function () { downloadNotePDF(title, editor.innerHTML); };
   }
   function push(fn) { navStack.push(fn); fn(); window.scrollTo(0, 0); }
 
