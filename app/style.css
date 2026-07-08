@@ -17,13 +17,28 @@ a{color:var(--indigo)}
 .row{display:flex;align-items:center}
 .wrap{max-width:760px;margin:0 auto;padding:14px}
 .card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;
-  box-shadow:0 6px 16px rgba(59,47,122,.07);cursor:pointer;border:1px solid transparent}
+  box-shadow:0 6px 16px rgba(59,47,122,.07);cursor:pointer;border:1px solid transparent;
+  transition:transform .18s,box-shadow .18s}
 .card:hover{border-color:var(--border)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.subj{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
-.badge{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:26px}
-.subj h3{margin:0;font-size:17px}
-.pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.badge{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.badge svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;flex-shrink:0}
+
+/* Dersler ekranı */
+.welcome{padding:8px 2px 18px}
+.welcome h2{margin:0 0 4px;font-size:23px;font-weight:900}
+.welcome p{margin:0;color:var(--soft);font-size:14px}
+.subjlist{display:flex;flex-direction:column;gap:12px}
+.subjrow{display:flex;align-items:center;gap:15px;padding:15px 16px}
+.subjrow:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(59,47,122,.14)}
+.sb-body{flex:1;min-width:0}
+.sb-body h3{margin:0;font-size:17.5px}
+.sb-body p{margin:3px 0 0;color:var(--soft);font-size:13px}
+.sb-chev{color:var(--faint);font-size:26px;font-weight:700;margin-left:2px}
+
+/* geniş harita */
+.mapwide{max-width:940px}
 .tlist .card{display:flex;align-items:center;gap:12px}
 .tnum{min-width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:13px;color:#fff}

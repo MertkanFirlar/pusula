@@ -8,10 +8,10 @@
   var navStack = []; // {render, title}
 
   var SUBJ = {
-    tarih: {e: '📜', g: 'linear-gradient(135deg,#F59E0B,#F97316)', a: '#EA7B0E', s: '#FEF3E2', l: 'Tarih'},
-    cografya: {e: '🌍', g: 'linear-gradient(135deg,#10B981,#14B8A6)', a: '#0E9F73', s: '#E5F8F1', l: 'Coğrafya'},
-    vatandaslik: {e: '⚖️', g: 'linear-gradient(135deg,#6366F1,#7C3AED)', a: '#5B53E8', s: '#EDEBFB', l: 'Vatandaşlık'},
-    guncel: {e: '🗞️', g: 'linear-gradient(135deg,#EC4899,#EF4444)', a: '#E0457C', s: '#FCE9F1', l: 'Güncel'},
+    tarih: {e: '📜', g: 'linear-gradient(135deg,#F59E0B,#F97316)', a: '#EA7B0E', s: '#FEF3E2', l: 'Tarih', d: 'İlk Türkler → Osmanlı → Cumhuriyet', svg: '<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/>'},
+    cografya: {e: '🌍', g: 'linear-gradient(135deg,#10B981,#14B8A6)', a: '#0E9F73', s: '#E5F8F1', l: 'Coğrafya', d: 'Konum, iklim, yer şekilleri, ekonomi', svg: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/>'},
+    vatandaslik: {e: '⚖️', g: 'linear-gradient(135deg,#6366F1,#7C3AED)', a: '#5B53E8', s: '#EDEBFB', l: 'Vatandaşlık', d: 'Anayasa, yasama, yürütme, yargı', svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'},
+    guncel: {e: '🗞️', g: 'linear-gradient(135deg,#EC4899,#EF4444)', a: '#E0457C', s: '#FCE9F1', l: 'Güncel', d: 'Güncel bilgiler ve rekortmenler', svg: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/>'},
   };
   function sj(k) { return SUBJ[k] || SUBJ.guncel; }
   function esc(t) { return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -87,13 +87,16 @@
   function renderSubjects() {
     setBar('📖 KPSS Pusula', 'Genel Kültür · web', false);
     var total = DATA.content.reduce(function (a, s) { return a + s.topics.length; }, 0);
-    var h = '<div class="wrap"><p class="hint">' + total + ' konu hazır — birini seç</p><div class="grid">';
+    var h = '<div class="wrap">' +
+      '<div class="welcome"><h2>Nereden başlayalım?</h2><p>' + total + ' konu · 500+ soru · 10 deneme — hepsi çevrimdışı.</p></div>' +
+      '<div class="subjlist">';
     DATA.content.forEach(function (s) {
       var st = sj(s.key);
-      h += '<div class="card subj" data-s="' + s.key + '">' +
-        '<div class="badge" style="background:' + st.g + '">' + st.e + '</div>' +
-        '<h3>' + st.l + '</h3>' +
-        '<span class="pill" style="background:' + st.s + ';color:' + st.a + '">' + s.topics.length + ' konu</span></div>';
+      h += '<div class="card subjrow" data-s="' + s.key + '">' +
+        '<div class="badge" style="background:' + st.g + '"><svg viewBox="0 0 24 24">' + (st.svg || '') + '</svg></div>' +
+        '<div class="sb-body"><h3>' + st.l + '</h3><p>' + (st.d || '') + '</p></div>' +
+        '<span class="pill" style="background:' + st.s + ';color:' + st.a + '">' + s.topics.length + ' konu</span>' +
+        '<span class="sb-chev">›</span></div>';
     });
     h += '</div></div>';
     view.innerHTML = h;
@@ -178,7 +181,7 @@
         return '<div class="lg"><span class="dot" style="background:' + it.color + '"></span>' + it.label + '</div>';
       }).join('') + '</div></div>';
     }
-    view.innerHTML = '<div class="chips">' + chips + '</div><div class="wrap"><div class="mapwrap"><svg viewBox="' + m.viewBox + '">' + paths + '</svg></div></div>' + sub +
+    view.innerHTML = '<div class="chips">' + chips + '</div><div class="wrap mapwide"><div class="mapwrap"><svg viewBox="' + m.viewBox + '">' + paths + '</svg></div></div>' + sub +
       '<p class="hint">💡 Bir ile dokun → bilgileri alttan açılır.</p>';
     Array.prototype.forEach.call(view.querySelectorAll('[data-l]'), function (el) { el.onclick = function () { mapLayer = el.dataset.l; mapItem = 0; renderMap(); }; });
     Array.prototype.forEach.call(view.querySelectorAll('[data-i]'), function (el) { el.onclick = function () { mapItem = +el.dataset.i; renderMap(); }; });
