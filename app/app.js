@@ -1,13 +1,14 @@
 (function () {
   'use strict';
   var view = document.getElementById('view');
-  var appbar = document.getElementById('appbar');
+  var ctx = document.getElementById('ctx');
   var tabsEl = document.getElementById('tabs');
   var DATA = {};
   var tab = 'konular';
-  var navStack = []; // {render, title}
+  var navStack = []; // {render}
 
   var SUBJ = {
+    turkce: {e: '🔤', g: 'linear-gradient(135deg,#3B82F6,#2563EB)', a: '#2563EB', s: '#E8F0FE', l: 'Türkçe', d: 'Sözcük–cümle anlam, paragraf, dil bilgisi', svg: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>'},
     tarih: {e: '📜', g: 'linear-gradient(135deg,#F59E0B,#F97316)', a: '#EA7B0E', s: '#FEF3E2', l: 'Tarih', d: 'İlk Türkler → Osmanlı → Cumhuriyet', svg: '<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/>'},
     cografya: {e: '🌍', g: 'linear-gradient(135deg,#10B981,#14B8A6)', a: '#0E9F73', s: '#E5F8F1', l: 'Coğrafya', d: 'Konum, iklim, yer şekilleri, ekonomi', svg: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/>'},
     vatandaslik: {e: '⚖️', g: 'linear-gradient(135deg,#6366F1,#7C3AED)', a: '#5B53E8', s: '#EDEBFB', l: 'Vatandaşlık', d: 'Anayasa, yasama, yürütme, yargı', svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'},
@@ -24,7 +25,7 @@
     while (i < lines.length) {
       var raw = lines[i], line = raw.trim();
       if (line === '') { i++; continue; }
-      if (/^(-{3,}|_{3,}|\*{3,})$/.test(line)) { out.push('<hr>'); i++; continue; }
+      if (/^(={3,}|-{3,}|_{3,}|\*{3,})$/.test(line)) { out.push('<hr>'); i++; continue; }
       var h = line.match(/^(#{1,6})\s+(.*)$/);
       if (h) { var lv = Math.min(3, h[1].length); out.push('<h' + lv + '>' + inl(h[2]) + '</h' + lv + '>'); i++; continue; }
       if (line[0] === '>') {
@@ -41,7 +42,7 @@
         var th = '';
         if (hdr) th = '<tr>' + hdr.map(function (c) { return '<th>' + inl(c) + '</th>'; }).join('') + '</tr>';
         var tb = body.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + inl(c) + '</td>'; }).join('') + '</tr>'; }).join('');
-        out.push('<table>' + th + tb + '</table>'); continue;
+        out.push('<div class="tblwrap"><table>' + th + tb + '</table></div>'); continue;
       }
       var b = raw.match(/^\s*[-*•]\s+(.*)$/);
       if (b) {
@@ -61,34 +62,38 @@
   }
 
   /* ---------- Router ---------- */
+  function setActive(t) {
+    Array.prototype.forEach.call(tabsEl.querySelectorAll('button[data-t]'), function (c) { c.classList.toggle('on', c.dataset.t === t); });
+  }
   function setBar(title, sub, withBack, right) {
-    appbar.innerHTML = '<div class="row">' +
-      (withBack ? '<button class="back" id="bk">‹</button>'
-                : '<a class="back home" href="../" title="Ana sayfa">🏠</a>') +
-      '<div style="flex:1;min-width:0"><h1>' + title + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div>' +
+    ctx.innerHTML = '<div class="ctx-in">' +
+      (withBack ? '<button class="cback" id="bk" aria-label="Geri">‹</button>' : '') +
+      '<div class="ctx-t"><h1>' + title + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div>' +
       (right ? '<button class="barbtn" id="barright">' + right.label + '</button>' : '') +
       '</div>';
     if (withBack) document.getElementById('bk').onclick = goBack;
     if (right) document.getElementById('barright').onclick = right.onClick;
   }
   function goBack() { navStack.pop(); var f = navStack[navStack.length - 1]; if (f) f(); else openTab(tab); window.scrollTo(0, 0); }
+  function push(fn) { navStack.push(fn); fn(); window.scrollTo(0, 0); }
   function openTab(t) {
     tab = t; navStack = [];
-    Array.prototype.forEach.call(tabsEl.children, function (c) { c.classList.toggle('on', c.dataset.t === t); });
+    setActive(t);
     closeSheet();
     if (t === 'konular') renderSubjects();
     else if (t === 'harita') renderMap();
     else if (t === 'test') renderTestHome();
+    else if (t === 'hizli') renderHizliHome();
     else if (t === 'notlar') renderNotes();
     window.scrollTo(0, 0);
   }
 
   /* ---------- Konular ---------- */
   function renderSubjects() {
-    setBar('📖 KPSS Pusula', 'Genel Kültür · web', false);
+    setBar('📖 KPSS Pusula', 'Konu anlatımı · web', false);
     var total = DATA.content.reduce(function (a, s) { return a + s.topics.length; }, 0);
     var h = '<div class="wrap">' +
-      '<div class="welcome"><h2>Nereden başlayalım?</h2><p>' + total + ' konu · 500+ soru · 10 deneme — hepsi çevrimdışı.</p></div>' +
+      '<div class="welcome"><h2>Nereden başlayalım?</h2><p>' + total + ' konu · ' + DATA.questions.length + ' soru · ' + DATA.exams.count + ' deneme — hepsi çevrimdışı.</p></div>' +
       '<div class="subjlist">';
     DATA.content.forEach(function (s) {
       var st = sj(s.key);
@@ -107,13 +112,20 @@
   function renderTopicList(skey) {
     var s = DATA.content.find(function (x) { return x.key === skey; }); var st = sj(skey);
     setBar(st.e + ' ' + st.l, s.topics.length + ' konu', true);
-    var h = '<div class="wrap tlist">';
+    var h = '<div class="wrap tlistwrap">';
+    if (skey === 'tarih') {
+      h += '<div class="card hzcard" id="hzquick"><div class="badge" style="background:linear-gradient(135deg,#F59E0B,#EF4444);width:46px;height:46px">⚡</div>' +
+        '<div class="sb-body"><h3>Hızlı Tekrar</h3><p>Padişahlar + tüm konu özetleri</p></div><span class="sb-chev">›</span></div>';
+    }
+    h += '<div class="tlist">';
     s.topics.forEach(function (t, idx) {
       h += '<div class="card" data-t="' + idx + '"><div class="tnum" style="background:' + st.a + '">' + (idx + 1) + '</div>' +
         '<div class="ttl">' + esc(t.title) + '</div><div class="chev">›</div></div>';
     });
-    h += '</div>';
+    h += '</div></div>';
     view.innerHTML = h;
+    var hq = document.getElementById('hzquick');
+    if (hq) hq.onclick = function () { tab = 'hizli'; setActive('hizli'); navStack = [function () { renderTopicList(skey); }]; push(renderHizliHome); };
     Array.prototype.forEach.call(view.querySelectorAll('[data-t]'), function (el) {
       el.onclick = function () { push(function () { renderTopic(skey, +el.dataset.t); }); };
     });
@@ -152,6 +164,54 @@
         return;
       }
     }
+  }
+
+  /* ---------- Hızlı Tekrar ---------- */
+  function renderHizliHome() {
+    setBar('⚡ Hızlı Tekrar', 'Sınav öncesi hızlı göz gezdir', tab !== 'hizli');
+    var h = '<div class="wrap"><div class="welcome" style="padding-bottom:10px"><h2>Hızlı Tekrar</h2><p>Konuların en can alıcı bilgileri, tek akışta.</p></div><div class="subjlist">';
+    h += '<div class="card subjrow" data-h="padisah"><div class="badge" style="background:linear-gradient(135deg,#B45309,#F59E0B)">👑</div>' +
+      '<div class="sb-body"><h3>Osmanlı Padişahları</h3><p>36 padişah, dönem dönem tüm ayrıntılar</p></div><span class="sb-chev">›</span></div>';
+    DATA.hizli.sections.forEach(function (sec) {
+      h += '<div class="card subjrow" data-h="' + sec.key + '"><div class="badge" style="background:linear-gradient(135deg,#6D5DF6,#7C3AED)">📌</div>' +
+        '<div class="sb-body"><h3>' + esc(sec.title.replace(/^[^A-Za-zÇĞİÖŞÜ0-9]+/, '')) + '</h3></div><span class="sb-chev">›</span></div>';
+    });
+    h += '</div></div>';
+    view.innerHTML = h;
+    Array.prototype.forEach.call(view.querySelectorAll('[data-h]'), function (el) {
+      el.onclick = function () {
+        var k = el.dataset.h;
+        if (k === 'padisah') push(renderPadisah);
+        else push(function () { renderHizliSection(k); });
+      };
+    });
+  }
+  function renderHizliSection(key) {
+    var sec = DATA.hizli.sections.find(function (x) { return x.key === key; });
+    if (!sec) return;
+    setBar('⚡ ' + esc(sec.title.replace(/^[^A-Za-zÇĞİÖŞÜ0-9]+/, '')).slice(0, 30), '', true);
+    view.innerHTML = '<div class="wrap"><div class="topic">' + md(sec.raw) + '</div></div>';
+    window.scrollTo(0, 0);
+  }
+  function renderPadisah() {
+    setBar('👑 Osmanlı Padişahları', 'Dönem dönem', true);
+    var h = '<div class="wrap">';
+    DATA.hizli.padisah.forEach(function (era) {
+      h += '<div class="era"><div class="era-h"><span>' + esc(era.title) + '</span><span class="era-y">' + esc(era.years || '') + '</span></div>';
+      era.items.forEach(function (it) {
+        if (it.type === 'note') { h += '<div class="pnote">' + inl(it.text) + '</div>'; return; }
+        var stars = it.stars ? ' <span class="pstar">' + Array(it.stars + 1).join('⭐') + '</span>' : '';
+        h += '<div class="pcard"><div class="pc-h"><span class="pno">' + (it.no || '') + '</span><span class="pname">' + esc(it.name) + stars + '</span><span class="preign">' + esc(it.reign || '') + '</span></div>';
+        (it.fields || []).forEach(function (f) {
+          h += '<div class="pf' + (f.important ? ' imp' : '') + '"><span class="pf-l">' + esc(f.label) + '</span><span class="pf-v">' + inl(f.value) + '</span></div>';
+        });
+        h += '</div>';
+      });
+      h += '</div>';
+    });
+    h += '</div>';
+    view.innerHTML = h;
+    window.scrollTo(0, 0);
   }
 
   /* ---------- Harita ---------- */
@@ -207,41 +267,86 @@
 
   /* ---------- Test ---------- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function byId(id) { return DATA.byId[id]; }
+
   function renderTestHome() {
-    setBar('🎯 Test Çöz', 'Ders seç, kendini sına', false);
+    setBar('🎯 Test & Deneme', 'Kendini sına', false);
     var byS = {}; DATA.questions.forEach(function (q) { byS[q.subject] = (byS[q.subject] || 0) + 1; });
-    var h = '<div class="wrap"><div class="card" style="background:' + 'linear-gradient(135deg,#5B53E8,#7C3AED)' + ';color:#fff" data-q="karisik"><h3 style="margin:0;color:#fff">🎲 Karışık Test</h3><div style="opacity:.85;font-size:13px;margin-top:4px">Tüm derslerden ' + DATA.questions.length + ' soru</div></div>';
+    var h = '<div class="wrap">' +
+      '<div class="card feature" id="go-exam"><div class="ft-ic">📝</div><div style="flex:1"><h3>Denemeler</h3><p>' + DATA.exams.count + ' tam deneme · net hesabı · yanlış analizi</p></div><span class="sb-chev">›</span></div>' +
+      '<div class="card feature alt" id="go-mix"><div class="ft-ic">🎲</div><div style="flex:1"><h3>Karışık Test</h3><p>Tüm derslerden 20 rastgele soru</p></div><span class="sb-chev">›</span></div>' +
+      '<div class="secttl">Derse göre çöz</div>';
     Object.keys(SUBJ).forEach(function (k) {
       var st = sj(k), c = byS[k] || 0;
-      h += '<div class="card tlist" data-q="' + k + '" style="' + (c ? '' : 'opacity:.45;pointer-events:none') + '"><div style="display:flex;align-items:center;gap:12px"><div class="badge" style="background:' + st.s + ';width:46px;height:46px;font-size:22px">' + st.e + '</div><div style="flex:1"><div class="ttl">' + st.l + '</div><div style="font-size:12.5px;color:var(--soft)">' + (c ? c + ' soru' : 'Soru yok') + '</div></div><div class="chev">›</div></div></div>';
+      h += '<div class="card trow" data-q="' + k + '" style="' + (c ? '' : 'opacity:.4;pointer-events:none') + '">' +
+        '<div class="badge" style="background:' + st.s + ';width:46px;height:46px;font-size:22px">' + st.e + '</div>' +
+        '<div style="flex:1"><div class="ttl">' + st.l + '</div><div class="sub2">' + (c ? c + ' soru' : 'Soru yok') + '</div></div><div class="chev">›</div></div>';
     });
     h += '</div>';
     view.innerHTML = h;
+    document.getElementById('go-exam').onclick = function () { push(renderExams); };
+    document.getElementById('go-mix').onclick = function () { startPractice(shuffle(DATA.questions).slice(0, 20), '🎲 Karışık Test', renderTestHome); };
     Array.prototype.forEach.call(view.querySelectorAll('[data-q]'), function (el) {
-      el.onclick = function () { startQuiz(el.dataset.q); };
+      el.onclick = function () { push(function () { renderTestSubject(el.dataset.q); }); };
     });
   }
-  function startQuiz(key) {
-    var pool = key === 'karisik' ? DATA.questions : DATA.questions.filter(function (q) { return q.subject === key; });
-    pool = shuffle(pool); var idx = 0, score = 0;
+
+  function renderTestSubject(skey) {
+    var st = sj(skey);
+    var s = DATA.content.find(function (x) { return x.key === skey; });
+    var subjQ = DATA.questions.filter(function (q) { return q.subject === skey; });
+    setBar(st.e + ' ' + st.l + ' Testleri', subjQ.length + ' soru', true);
+    var h = '<div class="wrap">' +
+      '<div class="card feature" style="background:' + st.g + '" id="mixsub"><div class="ft-ic">🎲</div><div style="flex:1"><h3 style="color:#fff">Karışık ' + st.l + '</h3><p style="color:rgba(255,255,255,.85)">20 rastgele soru</p></div><span class="sb-chev" style="color:#fff">›</span></div>' +
+      '<div class="secttl">Konu konu test</div>';
+    var any = false;
+    (s ? s.topics : []).forEach(function (t) {
+      var tests = DATA.topictests[t.key];
+      if (!tests || !tests.length) return;
+      any = true;
+      h += '<div class="card ttcard"><div class="tt-top"><div class="tnum" style="background:' + st.a + '">•</div><div class="tt-name">' + esc(t.title) + '</div></div><div class="tt-btns">';
+      tests.forEach(function (ids, i) {
+        h += '<button class="ttbtn" data-topic="' + esc(t.key) + '" data-i="' + i + '">Test ' + (i + 1) + ' <small>' + ids.length + '</small></button>';
+      });
+      h += '</div></div>';
+    });
+    if (!any) h += '<p class="muted">Bu ders için konu testi yok.</p>';
+    h += '</div>';
+    view.innerHTML = h;
+    document.getElementById('mixsub').onclick = function () { startPractice(shuffle(subjQ).slice(0, 20), '🎲 Karışık ' + st.l, function () { renderTestSubject(skey); }); };
+    Array.prototype.forEach.call(view.querySelectorAll('[data-topic]'), function (el) {
+      el.onclick = function () {
+        var ids = DATA.topictests[el.dataset.topic][+el.dataset.i];
+        var pool = ids.map(byId).filter(Boolean);
+        var tt = DATA.content.find(function (x) { return x.key === skey; }).topics.find(function (t) { return t.key === el.dataset.topic; });
+        startPractice(pool, (tt ? tt.title : '') + ' · Test ' + (+el.dataset.i + 1), function () { renderTestSubject(skey); });
+      };
+    });
+  }
+
+  /* --- Alıştırma (anında geri bildirim) --- */
+  function startPractice(pool, title, backFn) {
+    if (!pool.length) { toast('Soru bulunamadı'); return; }
+    navStack.push(function () { startPractice(pool, title, backFn); });
+    var idx = 0, score = 0;
     function q() {
       var cur = pool[idx], st = sj(cur.subject), picked = null;
-      setBar('Soru ' + (idx + 1) + '/' + pool.length, '', false);
       function draw() {
+        setBar(title, 'Soru ' + (idx + 1) + '/' + pool.length, true);
         var opts = cur.options.map(function (o, oi) {
           var cls = 'opt', lt = 'ABCDE'[oi];
           if (picked != null) { if (oi === cur.correct) { cls = 'opt ok'; lt = '✓'; } else if (oi === picked) { cls = 'opt no'; lt = '✕'; } }
-          return '<div class="' + cls + '" data-o="' + oi + '"><div class="lt">' + lt + '</div><div>' + esc(o) + '</div></div>';
+          return '<div class="' + cls + '" data-o="' + oi + '"><div class="lt">' + lt + '</div><div>' + inl(o) + '</div></div>';
         }).join('');
         var ex = '';
         if (picked != null) {
-          ex = '<div class="explain"><b>' + (picked === cur.correct ? '✅ Doğru!' : '❌ Yanlış') + '</b><p style="margin:6px 0 0;color:var(--soft);font-size:14px">' + esc(cur.explain) + '</p>' +
+          ex = '<div class="explain"><b>' + (picked === cur.correct ? '✅ Doğru!' : '❌ Yanlış') + '</b><p style="margin:6px 0 0;color:var(--soft);font-size:14px">' + inl(cur.explain || '') + '</p>' +
             (cur.topicKey ? '<button class="btn ghost" id="goto" style="margin-top:12px">📖 Konuya Git</button>' : '') + '</div>' +
             '<button class="btn" id="nx" style="width:100%;margin-top:12px">' + (idx + 1 >= pool.length ? 'Bitir' : 'Sonraki ›') + '</button>';
         }
         view.innerHTML = '<div class="wrap"><div class="qprog"><div style="width:' + ((idx + 1) / pool.length * 100) + '%"></div></div>' +
           '<span class="pill" style="background:' + st.s + ';color:' + st.a + '">' + st.e + ' ' + st.l + '</span>' +
-          '<p style="font-size:17px;font-weight:700;margin:12px 0 16px">' + esc(cur.q) + '</p>' + opts + ex + '</div>';
+          '<p class="qtext">' + inl(cur.q) + '</p>' + opts + ex + '</div>';
         if (picked == null) Array.prototype.forEach.call(view.querySelectorAll('[data-o]'), function (el) {
           el.onclick = function () { picked = +el.dataset.o; if (picked === cur.correct) score++; draw(); };
         });
@@ -256,16 +361,105 @@
     }
     function result() {
       var pct = Math.round(score / pool.length * 100);
-      setBar('Sonuç', '', false);
-      view.innerHTML = '<div class="wrap" style="text-align:center;padding-top:40px"><div style="font-size:60px;font-weight:900;color:var(--indigo)">' + score + '/' + pool.length + '</div>' +
-        '<div style="font-size:20px;font-weight:800;color:var(--soft)">%' + pct + '</div>' +
-        '<p style="font-size:17px;font-weight:700;margin:18px 0 26px">' + (pct >= 80 ? 'Mükemmel! 🏆' : pct >= 50 ? 'İyi gidiyorsun! 💪' : 'Tekrar çalış 📚') + '</p>' +
-        '<button class="btn" id="again" style="width:100%">🔄 Tekrar Çöz</button><button class="btn ghost" id="home" style="width:100%;margin-top:10px">Ders Seçimine Dön</button></div>';
-      document.getElementById('again').onclick = function () { startQuiz(key); };
-      document.getElementById('home').onclick = renderTestHome;
+      setBar('Sonuç', title, true);
+      view.innerHTML = '<div class="wrap resultwrap"><div class="ring" style="--p:' + pct + '"><div class="ring-in"><div class="ring-n">' + score + '/' + pool.length + '</div><div class="ring-p">%' + pct + '</div></div></div>' +
+        '<p class="result-msg">' + (pct >= 80 ? 'Mükemmel! 🏆' : pct >= 50 ? 'İyi gidiyorsun! 💪' : 'Tekrar çalışalım 📚') + '</p>' +
+        '<button class="btn" id="again" style="width:100%">🔄 Tekrar Çöz</button><button class="btn ghost" id="back" style="width:100%;margin-top:10px">Geri Dön</button></div>';
+      document.getElementById('again').onclick = function () { navStack.pop(); startPractice(pool, title, backFn); };
+      document.getElementById('back').onclick = goBack;
     }
     q();
   }
+
+  /* --- Denemeler --- */
+  var EKEY = 'kpss_web_exam_';
+  function examResult(no) { try { return JSON.parse(localStorage.getItem(EKEY + no) || 'null'); } catch (e) { return null; } }
+  function renderExams() {
+    setBar('📝 Denemeler', DATA.exams.count + ' tam deneme', true);
+    var h = '<div class="wrap"><p class="hint" style="margin:2px 0 14px">Her deneme ~60 soru · Net = Doğru − Yanlış ÷ 4</p><div class="examgrid">';
+    DATA.exams.list.forEach(function (ex) {
+      var r = examResult(ex.no);
+      h += '<div class="card examcard" data-no="' + ex.no + '"><div class="ex-no">' + ex.no + '</div><div class="ex-body"><div class="ex-t">Deneme ' + ex.no + '</div>' +
+        '<div class="ex-s">' + (r ? '✅ Net: <b>' + r.net + '</b> · D:' + r.dogru + ' Y:' + r.yanlis : ex.ids.length + ' soru') + '</div></div><span class="chev">›</span></div>';
+    });
+    h += '</div></div>';
+    view.innerHTML = h;
+    Array.prototype.forEach.call(view.querySelectorAll('[data-no]'), function (el) {
+      el.onclick = function () { var no = +el.dataset.no; var ex = DATA.exams.list.find(function (x) { return x.no === no; }); startExam(no, ex.ids.map(byId).filter(Boolean)); };
+    });
+  }
+  function startExam(no, pool) {
+    if (!pool.length) { toast('Deneme yüklenemedi'); return; }
+    navStack.push(function () { renderExams(); });
+    var idx = 0, answers = new Array(pool.length).fill(null);
+    function q() {
+      var cur = pool[idx], st = sj(cur.subject);
+      setBar('Deneme ' + no, 'Soru ' + (idx + 1) + '/' + pool.length, true);
+      var opts = cur.options.map(function (o, oi) {
+        var cls = 'opt' + (answers[idx] === oi ? ' sel' : '');
+        return '<div class="' + cls + '" data-o="' + oi + '"><div class="lt">' + 'ABCDE'[oi] + '</div><div>' + inl(o) + '</div></div>';
+      }).join('');
+      var nav = '<div class="btnrow">' +
+        (idx > 0 ? '<button class="btn ghost" id="pv">‹ Önceki</button>' : '') +
+        (idx + 1 < pool.length ? '<button class="btn" id="nx">Sonraki ›</button>' : '<button class="btn" id="fin" style="background:linear-gradient(135deg,#10B981,#0E9F73)">Bitir & Net Gör ✓</button>') +
+        '</div>';
+      view.innerHTML = '<div class="wrap"><div class="qprog"><div style="width:' + ((idx + 1) / pool.length * 100) + '%"></div></div>' +
+        '<span class="pill" style="background:' + st.s + ';color:' + st.a + '">' + st.e + ' ' + st.l + '</span>' +
+        '<p class="qtext">' + inl(cur.q) + '</p>' + opts + nav +
+        '<button class="btn ghost" id="jump" style="width:100%;margin-top:10px;font-size:13px">⏭ Soruya git / bitir</button></div>';
+      Array.prototype.forEach.call(view.querySelectorAll('[data-o]'), function (el) {
+        el.onclick = function () { answers[idx] = (answers[idx] === +el.dataset.o) ? null : +el.dataset.o; q(); };
+      });
+      var pv = document.getElementById('pv'), nx = document.getElementById('nx'), fin = document.getElementById('fin');
+      if (pv) pv.onclick = function () { idx--; q(); };
+      if (nx) nx.onclick = function () { idx++; q(); };
+      if (fin) fin.onclick = function () { finish(); };
+      document.getElementById('jump').onclick = function () { confirmFinish(); };
+      window.scrollTo(0, 0);
+    }
+    function confirmFinish() {
+      var answered = answers.filter(function (a) { return a != null; }).length;
+      if (answered < pool.length && !window.confirm((pool.length - answered) + ' soru boş. Yine de bitirilsin mi?')) return;
+      finish();
+    }
+    function finish() {
+      var dogru = 0, yanlis = 0, bos = 0, wrong = [];
+      pool.forEach(function (c, i) {
+        if (answers[i] == null) bos++;
+        else if (answers[i] === c.correct) dogru++;
+        else { yanlis++; wrong.push({q: c, a: answers[i]}); }
+      });
+      var net = Math.round((dogru - yanlis / 4) * 100) / 100;
+      var prev = examResult(no);
+      if (!prev || net >= prev.net) localStorage.setItem(EKEY + no, JSON.stringify({net: net, dogru: dogru, yanlis: yanlis, bos: bos, ts: Date.now()}));
+      setBar('Deneme ' + no + ' · Sonuç', '', true);
+      var pct = Math.round(dogru / pool.length * 100);
+      var h = '<div class="wrap resultwrap"><div class="ring" style="--p:' + pct + '"><div class="ring-in"><div class="ring-n">' + net + '</div><div class="ring-p">NET</div></div></div>' +
+        '<div class="netrow"><span class="nb ok">✓ ' + dogru + ' Doğru</span><span class="nb no">✕ ' + yanlis + ' Yanlış</span><span class="nb bl">○ ' + bos + ' Boş</span></div>';
+      if (wrong.length) {
+        h += '<div class="secttl">Yanlışların (' + wrong.length + ')</div>';
+        wrong.forEach(function (w) {
+          var st2 = sj(w.q.subject);
+          h += '<div class="card wcard"><span class="pill" style="background:' + st2.s + ';color:' + st2.a + '">' + st2.l + '</span>' +
+            '<p class="wq">' + inl(w.q.q) + '</p>' +
+            '<div class="wa no">Senin: ' + inl(w.q.options[w.a]) + '</div>' +
+            '<div class="wa ok">Doğru: ' + inl(w.q.options[w.q.correct]) + '</div>' +
+            (w.q.topicKey ? '<button class="btn ghost gotoW" data-tk="' + esc(w.q.topicKey) + '" data-jp="' + esc(w.q.jump || '') + '" style="margin-top:10px;font-size:13px">📖 Konuya Git</button>' : '') +
+            '</div>';
+        });
+      }
+      h += '<button class="btn" id="retry" style="width:100%;margin-top:14px">🔄 Tekrar Çöz</button><button class="btn ghost" id="back" style="width:100%;margin-top:10px">Denemelere Dön</button></div>';
+      view.innerHTML = h;
+      Array.prototype.forEach.call(view.querySelectorAll('.gotoW'), function (el) {
+        el.onclick = function () { gotoTopic(el.dataset.tk, el.dataset.jp); };
+      });
+      document.getElementById('retry').onclick = function () { navStack.pop(); startExam(no, pool); };
+      document.getElementById('back').onclick = goBack;
+      window.scrollTo(0, 0);
+    }
+    q();
+  }
+
   function gotoTopic(topicKey, jump) {
     var sk = topicKey.split('/')[0];
     var s = DATA.content.find(function (x) { return x.key === sk; });
@@ -273,7 +467,7 @@
     var idx = s.topics.findIndex(function (t) { return t.key === topicKey; });
     if (idx < 0) return;
     tab = 'konular';
-    Array.prototype.forEach.call(tabsEl.children, function (c) { c.classList.toggle('on', c.dataset.t === 'konular'); });
+    setActive('konular');
     navStack = [function () { renderTopicList(sk); }];
     push(function () { renderTopic(sk, idx, jump); });
   }
@@ -347,7 +541,6 @@
     else l.unshift({id: 'n' + Date.now(), key: key, title: title, html: html, ts: Date.now()});
     setNotes(l);
   }
-  /* Konu okurken yandan kayan zengin not çekmecesi (glass) */
   function openNotePanel(title, key) {
     var existing = getNotes().find(function (n) { return n.key === key; });
     var COLS = ['#E11D48', '#EA580C', '#CA8A04', '#16A34A', '#2563EB', '#7C3AED', '#111827'];
@@ -380,10 +573,11 @@
     editor.addEventListener('input', function () { count(); saved.textContent = ''; });
     function close() { p.classList.remove('open'); setTimeout(function () { p.remove(); }, 300); }
     p.querySelector('.np-x').onclick = close;
+    p.querySelector('.np-back').onclick = close;
     var sel = p.querySelector('.np-sel');
     sel.onchange = function () { editor.focus(); document.execCommand('formatBlock', false, sel.value); sel.value = 'P'; };
     Array.prototype.forEach.call(p.querySelectorAll('.np-tools button'), function (btn) {
-      btn.onmousedown = function (e) { e.preventDefault(); }; // seçim kaybolmasın
+      btn.onmousedown = function (e) { e.preventDefault(); };
       btn.onclick = function () {
         editor.focus();
         var c = btn.dataset.c, col = btn.dataset.col;
@@ -397,7 +591,6 @@
     p.querySelector('.np-save').onclick = function () { saveTopicNote(key, title, editor.innerHTML); saved.textContent = '✓ Kaydedildi'; toast('📝 Not kaydedildi'); };
     p.querySelector('.np-pdf').onclick = function () { downloadNotePDF(title, editor.innerHTML); };
   }
-  function push(fn) { navStack.push(fn); fn(); window.scrollTo(0, 0); }
 
   /* ---------- Toast ---------- */
   function toast(msg) {
@@ -407,15 +600,19 @@
   }
 
   /* ---------- Başlat ---------- */
-  Promise.all(['content', 'questions', 'map'].map(function (n) {
+  Promise.all(['content', 'questions', 'map', 'exams', 'topictests', 'hizli'].map(function (n) {
     return fetch('data/' + n + '.json').then(function (r) { return r.json(); });
   })).then(function (res) {
     DATA.content = res[0]; DATA.questions = res[1]; DATA.map = res[2];
-    var tabs = [['konular', '📚', 'Dersler'], ['harita', '🗺️', 'Harita'], ['test', '🎯', 'Test'], ['notlar', '📒', 'Notlar']];
-    tabsEl.innerHTML = tabs.map(function (t) { return '<button class="tab" data-t="' + t[0] + '"><span class="ic">' + t[1] + '</span>' + t[2] + '</button>'; }).join('');
-    Array.prototype.forEach.call(tabsEl.children, function (c) { c.onclick = function () { openTab(c.dataset.t); }; });
+    DATA.exams = res[3]; DATA.topictests = res[4]; DATA.hizli = res[5];
+    DATA.byId = {}; DATA.questions.forEach(function (q) { DATA.byId[q.id] = q; });
+    var tabs = [['konular', '📚', 'Dersler'], ['harita', '🗺️', 'Harita'], ['test', '🎯', 'Test'], ['hizli', '⚡', 'Tekrar'], ['notlar', '📒', 'Notlar']];
+    tabsEl.innerHTML =
+      '<a class="nlink ext" href="../"><span class="ic">🏠</span>Ana Sayfa</a>' +
+      tabs.map(function (t) { return '<button class="nlink" data-t="' + t[0] + '"><span class="ic">' + t[1] + '</span>' + t[2] + '</button>'; }).join('') +
+      '<a class="nlink ext dim" href="../gizlilik.html">Gizlilik</a>';
+    Array.prototype.forEach.call(tabsEl.querySelectorAll('button[data-t]'), function (c) { c.onclick = function () { openTab(c.dataset.t); }; });
     openTab('konular');
-    // Ana sayfadan ders linkiyle gelindiyse (app/#tarih) o dersi aç
     var hs = (location.hash || '').replace('#', '');
     if (hs && DATA.content.some(function (s) { return s.key === hs; })) {
       push(function () { renderTopicList(hs); });
