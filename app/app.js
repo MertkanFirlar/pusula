@@ -242,10 +242,12 @@
       }).join('') + '</div></div>';
     }
     view.innerHTML = '<div class="chips">' + chips + '</div><div class="wrap mapwide"><div class="mapwrap"><svg viewBox="' + m.viewBox + '">' + paths + '</svg></div></div>' + sub +
-      '<p class="hint">💡 Bir ile dokun → bilgileri alttan açılır.</p>';
+      '<p class="hint">💡 Bir ile dokun → bilgileri alttan açılır.</p>' +
+      (DATA.placement ? '<div class="wrap mapwide" style="padding-top:0"><button class="btn wide" id="goplace">🎯 Yerleştirme Oyunu — sürükle-bırak</button></div>' : '');
     Array.prototype.forEach.call(view.querySelectorAll('[data-l]'), function (el) { el.onclick = function () { mapLayer = el.dataset.l; mapItem = 0; renderMap(); }; });
     Array.prototype.forEach.call(view.querySelectorAll('[data-i]'), function (el) { el.onclick = function () { mapItem = +el.dataset.i; renderMap(); }; });
-    Array.prototype.forEach.call(view.querySelectorAll('path'), function (el) { el.onclick = function () { showProvince(+el.dataset.p); }; });
+    Array.prototype.forEach.call(view.querySelectorAll('.mapwrap path'), function (el) { el.onclick = function () { showProvince(+el.dataset.p); }; });
+    var gp = document.getElementById('goplace'); if (gp) gp.onclick = function () { push(renderPlacement); };
   }
   function showProvince(plate) {
     var m = DATA.map;
@@ -264,6 +266,110 @@
     document.getElementById('shx').onclick = closeSheet;
   }
   function closeSheet() { var sh = document.getElementById('sheet'); if (sh) sh.style.display = 'none'; }
+
+  /* ---------- Yerleştirme Oyunu ---------- */
+  var PCOL = {
+    dag_kuzey: '#8B5E3C', dag_guney: '#8B5E3C', dag_volkanik: '#EF4444', dag_kirik: '#8B5E3C',
+    akarsu: '#2563EB', gol: '#06B6D4', ova: '#10B981', plato: '#92400E',
+    delta: '#0D9488', sehir: '#EC4899', komsu: '#F59E0B',
+  };
+  var placeCat = null, placeSolved = {}, placeOrder = {};
+  function pcol(k) { return PCOL[k] || '#7C3AED'; }
+  function renderPlacement() {
+    var P = DATA.placement;
+    if (!placeCat || !P.categories.some(function (c) { return c.key === placeCat; })) placeCat = P.categories[0].key;
+    var cat = P.categories.find(function (c) { return c.key === placeCat; });
+    var col = pcol(placeCat);
+    var solved = placeSolved[placeCat] || (placeSolved[placeCat] = {});
+    var total = cat.items.length;
+    var done = cat.items.filter(function (it) { return solved[it.name]; }).length;
+    setBar('🎯 Yerleştirme Oyunu', cat.title, true);
+
+    var chips = P.categories.map(function (c) {
+      var d = placeSolved[c.key] ? Object.keys(placeSolved[c.key]).length : 0;
+      var on = c.key === placeCat;
+      return '<button class="chip' + (on ? ' on' : '') + '" data-pc="' + c.key + '"' +
+        (on ? ' style="background:' + pcol(c.key) + ';border-color:' + pcol(c.key) + '"' : '') +
+        '>' + esc(c.title) + ' (' + d + '/' + c.items.length + ')</button>';
+    }).join('');
+
+    var paths = DATA.map.provinces.map(function (p) { return '<path d="' + p.d + '"/>'; }).join('');
+    var markers = cat.items.map(function (it, i) {
+      if (solved[it.name]) {
+        return '<g class="psolved">' +
+          '<text x="' + it.x + '" y="' + (it.y - 12) + '" text-anchor="middle" class="plabel" style="fill:' + col + '">' + esc(it.name) + '</text>' +
+          '<circle cx="' + it.x + '" cy="' + it.y + '" r="6.5" fill="' + col + '" stroke="#fff" stroke-width="1.6"/></g>';
+      }
+      return '<g class="ptarget"><circle cx="' + it.x + '" cy="' + it.y + '" r="9" fill="#fff" stroke="' + col + '" stroke-width="2.4" stroke-dasharray="3 3"/>' +
+        '<text x="' + it.x + '" y="' + (it.y + 4) + '" text-anchor="middle" class="pq" style="fill:' + col + '">?</text></g>';
+    }).join('');
+
+    if (!placeOrder[placeCat]) placeOrder[placeCat] = shuffle(cat.items.map(function (it) { return it.name; }));
+    var pool = placeOrder[placeCat].filter(function (nm) { return !solved[nm]; });
+    var poolHtml = pool.map(function (nm) { return '<button class="pchip" data-name="' + esc(nm) + '" style="border-color:' + col + '55">' + esc(nm) + '</button>'; }).join('');
+
+    var progress = '<div class="pbar"><div class="pbar-in" style="width:' + Math.round(done / total * 100) + '%;background:' + col + '"></div></div>';
+    var bottom;
+    if (done === total) {
+      bottom = '<div class="wrap mapwide"><div class="pdone" style="border-color:' + col + '"><div class="pd-em">🎉</div>' +
+        '<h3>Tebrikler!</h3><p><b>' + esc(cat.title) + '</b> — ' + total + '/' + total + ' doğru</p>' +
+        '<button class="btn" id="preset">↺ Tekrar Başla</button></div></div>';
+    } else {
+      bottom = '<div class="wrap mapwide"><p class="hint" style="margin:10px 0 6px">💡 Aşağıdaki ismi haritadaki doğru noktaya sürükle-bırak.</p>' +
+        '<div class="ppool">' + poolHtml + '</div></div>';
+    }
+
+    view.innerHTML = '<div class="chips pcats">' + chips + '</div>' +
+      '<div class="wrap mapwide" style="padding-bottom:4px">' + progress +
+      '<div class="mapwrap pmap"><svg id="pmap" viewBox="' + DATA.map.viewBox + '">' + paths + markers + '</svg></div></div>' + bottom;
+
+    Array.prototype.forEach.call(view.querySelectorAll('[data-pc]'), function (el) {
+      el.onclick = function () { placeCat = el.dataset.pc; renderPlacement(); };
+    });
+    var rs = document.getElementById('preset');
+    if (rs) rs.onclick = function () { placeSolved[placeCat] = {}; placeOrder[placeCat] = null; renderPlacement(); };
+    wirePlacementDrag(cat, solved, col);
+  }
+
+  function wirePlacementDrag(cat, solved, col) {
+    var svg = document.getElementById('pmap');
+    if (!svg) return;
+    Array.prototype.forEach.call(view.querySelectorAll('.pchip'), function (chip) {
+      chip.addEventListener('pointerdown', function (ev) {
+        ev.preventDefault();
+        var name = chip.dataset.name;
+        var target = cat.items.find(function (it) { return it.name === name; });
+        var fl = document.createElement('div');
+        fl.className = 'pfloat';
+        fl.textContent = name;
+        fl.style.borderColor = col;
+        document.body.appendChild(fl);
+        chip.style.visibility = 'hidden';
+        var move = function (e) { fl.style.left = e.clientX + 'px'; fl.style.top = e.clientY + 'px'; };
+        move(ev);
+        var up = function (e) {
+          document.removeEventListener('pointermove', move);
+          document.removeEventListener('pointerup', up);
+          if (fl.parentNode) fl.parentNode.removeChild(fl);
+          var r = svg.getBoundingClientRect();
+          var vb = svg.viewBox.baseVal;
+          var vx = vb.x + (e.clientX - r.left) / r.width * vb.width;
+          var vy = vb.y + (e.clientY - r.top) / r.height * vb.height;
+          var d2 = (target.x - vx) * (target.x - vx) + (target.y - vy) * (target.y - vy);
+          if (d2 < 78 * 78) {
+            solved[name] = true;
+            renderPlacement();
+          } else {
+            chip.style.visibility = '';
+            chip.classList.add('wrong');
+            setTimeout(function () { chip.classList.remove('wrong'); }, 480);
+          }
+        };
+        document.addEventListener('pointermove', move);
+        document.addEventListener('pointerup', up);
+      });
+    });
+  }
 
   /* ---------- Test ---------- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -600,11 +706,11 @@
   }
 
   /* ---------- Başlat ---------- */
-  Promise.all(['content', 'questions', 'map', 'exams', 'topictests', 'hizli'].map(function (n) {
+  Promise.all(['content', 'questions', 'map', 'exams', 'topictests', 'hizli', 'placement'].map(function (n) {
     return fetch('data/' + n + '.json').then(function (r) { return r.json(); });
   })).then(function (res) {
     DATA.content = res[0]; DATA.questions = res[1]; DATA.map = res[2];
-    DATA.exams = res[3]; DATA.topictests = res[4]; DATA.hizli = res[5];
+    DATA.exams = res[3]; DATA.topictests = res[4]; DATA.hizli = res[5]; DATA.placement = res[6];
     DATA.byId = {}; DATA.questions.forEach(function (q) { DATA.byId[q.id] = q; });
     var tabs = [['konular', '📚', 'Dersler'], ['harita', '🗺️', 'Harita'], ['test', '🎯', 'Test'], ['hizli', '⚡', 'Tekrar'], ['notlar', '📒', 'Notlar']];
     tabsEl.innerHTML =

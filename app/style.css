@@ -291,3 +291,29 @@ textarea.f{min-height:180px;resize:vertical}
   .examgrid{grid-template-columns:repeat(4,1fr)}
   .tabs{max-width:960px}
 }
+
+/* ---- Yerleştirme Oyunu ---- */
+.btn.wide{display:block;width:100%;text-align:center}
+.pcats{padding-bottom:4px}
+.pbar{height:8px;border-radius:99px;background:#E9E7F4;overflow:hidden;margin:2px 0 8px}
+.pbar-in{height:100%;border-radius:99px;transition:width .35s ease}
+.pmap{touch-action:none}
+.pmap path{fill:#EDEFF5;stroke:#D3D8E2;stroke-width:.6;cursor:default}
+.pmap .plabel{font-size:12.5px;font-weight:800;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.pmap .pq{font-size:11px;font-weight:800}
+.pmap .ptarget{pointer-events:none}
+.ppool{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:4px}
+.pchip{padding:11px 15px;border-radius:12px;background:#fff;border:2px solid var(--border);
+  font-size:14px;font-weight:800;color:var(--text);cursor:grab;touch-action:none;
+  box-shadow:0 3px 8px rgba(59,47,122,.09);-webkit-user-select:none;user-select:none}
+.pchip:active{cursor:grabbing}
+.pchip.wrong{animation:pshake .42s;border-color:#EF4444!important;background:#FEECEC}
+@keyframes pshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.pfloat{position:fixed;transform:translate(-50%,-115%);z-index:9999;pointer-events:none;
+  padding:11px 15px;border-radius:12px;background:#fff;border:2px solid var(--purple);
+  font-size:14px;font-weight:800;color:var(--text);box-shadow:0 10px 26px rgba(59,47,122,.28);white-space:nowrap}
+.pdone{background:var(--card);border:2px solid var(--indigo);border-radius:18px;padding:26px 18px;text-align:center;
+  box-shadow:0 12px 30px rgba(59,47,122,.14)}
+.pdone .pd-em{font-size:46px;line-height:1}
+.pdone h3{margin:8px 0 2px;font-size:22px;color:var(--text)}
+.pdone p{margin:0 0 16px;color:var(--soft);font-size:14px}
