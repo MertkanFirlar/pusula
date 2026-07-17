@@ -271,7 +271,8 @@
   var PCOL = {
     dag_kuzey: '#8B5E3C', dag_guney: '#8B5E3C', dag_volkanik: '#EF4444', dag_kirik: '#8B5E3C',
     akarsu: '#2563EB', gol: '#06B6D4', ova: '#10B981', plato: '#92400E',
-    delta: '#0D9488', sehir: '#EC4899', komsu: '#F59E0B',
+    delta: '#0D9488', komsu: '#F59E0B',
+    sehir1: '#EC4899', sehir2: '#EC4899', sehir3: '#EC4899', sehir4: '#EC4899', sehir_tum: '#DB2777',
   };
   var placeCat = null, placeSolved = {}, placeOrder = {};
   function pcol(k) { return PCOL[k] || '#7C3AED'; }
