@@ -14,22 +14,23 @@ a{color:var(--indigo)}
 
 /* ===== Liquid-glass site navbar (tier 1, sabit) ===== */
 .sitebar{position:sticky;top:0;z-index:50;min-height:54px;box-sizing:border-box;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:9px max(14px,calc((100vw - 960px)/2));
-  background:rgba(255,255,255,.68);
-  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:1px solid rgba(255,255,255,.5);box-shadow:0 4px 24px rgba(59,47,122,.06)}
-.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;color:var(--text);text-decoration:none;flex-shrink:0}
-.brand img{width:30px;height:30px;border-radius:9px}
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:11px max(16px,calc((100vw - 960px)/2));
+  background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;color:var(--text);text-decoration:none;flex-shrink:0}
+.brand img{width:32px;height:32px;border-radius:9px}
 .navlinks{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .navlinks::-webkit-scrollbar{display:none}
-.nlink{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:0;background:none;cursor:pointer;
-  color:var(--soft);font-weight:700;font-size:14px;padding:8px 13px;border-radius:999px;text-decoration:none;
+.nlink{display:inline-flex;align-items:center;white-space:nowrap;border:0;background:none;cursor:pointer;
+  color:var(--soft);font-weight:700;font-size:14.5px;padding:8px 13px;border-radius:999px;text-decoration:none;
   font-family:inherit;transition:background .15s,color .15s}
-.nlink .ic{font-size:15px}
-.nlink:hover{background:rgba(79,70,229,.09);color:var(--indigo)}
+.nlink:hover{background:var(--bg);color:var(--indigo)}
 .nlink.on{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;box-shadow:0 6px 16px rgba(79,70,229,.30)}
-.nlink.dim{color:var(--faint);font-weight:600;font-size:13px}
+.nlink.on:hover{color:#fff}
+.nlink.home{color:var(--indigo)}
+.nlink.dim{color:var(--faint);font-weight:600;font-size:13.5px}
 .nlink.dim:hover{color:var(--indigo)}
 
 /* ===== Bağlam satırı (tier 2, cam, geri + başlık) ===== */

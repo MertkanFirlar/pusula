@@ -9,6 +9,7 @@
 
   var SUBJ = {
     turkce: {e: '🔤', g: 'linear-gradient(135deg,#3B82F6,#2563EB)', a: '#2563EB', s: '#E8F0FE', l: 'Türkçe', d: 'Sözcük–cümle anlam, paragraf, dil bilgisi', svg: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>'},
+    matematik: {e: '🔢', g: 'linear-gradient(135deg,#06B6D4,#0891B2)', a: '#0E8AA3', s: '#E0F5FA', l: 'Matematik', d: 'Rasyonel, denklem, problemler, geometri', svg: '<path d="M5 12h14"/><circle cx="12" cy="7" r="1.3"/><circle cx="12" cy="17" r="1.3"/>'},
     tarih: {e: '📜', g: 'linear-gradient(135deg,#F59E0B,#F97316)', a: '#EA7B0E', s: '#FEF3E2', l: 'Tarih', d: 'İlk Türkler → Osmanlı → Cumhuriyet', svg: '<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/>'},
     cografya: {e: '🌍', g: 'linear-gradient(135deg,#10B981,#14B8A6)', a: '#0E9F73', s: '#E5F8F1', l: 'Coğrafya', d: 'Konum, iklim, yer şekilleri, ekonomi', svg: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/>'},
     vatandaslik: {e: '⚖️', g: 'linear-gradient(135deg,#6366F1,#7C3AED)', a: '#5B53E8', s: '#EDEBFB', l: 'Vatandaşlık', d: 'Anayasa, yasama, yürütme, yargı', svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'},
@@ -715,9 +716,10 @@
     DATA.byId = {}; DATA.questions.forEach(function (q) { DATA.byId[q.id] = q; });
     var tabs = [['konular', '📚', 'Dersler'], ['harita', '🗺️', 'Harita'], ['test', '🎯', 'Test'], ['hizli', '⚡', 'Tekrar'], ['notlar', '📒', 'Notlar']];
     tabsEl.innerHTML =
-      '<a class="nlink ext" href="../"><span class="ic">🏠</span>Ana Sayfa</a>' +
-      tabs.map(function (t) { return '<button class="nlink" data-t="' + t[0] + '"><span class="ic">' + t[1] + '</span>' + t[2] + '</button>'; }).join('') +
-      '<a class="nlink ext dim" href="../gizlilik.html">Gizlilik</a>';
+      '<a class="nlink home" href="../">Ana Sayfa</a>' +
+      tabs.map(function (t) { return '<button class="nlink" data-t="' + t[0] + '">' + t[2] + '</button>'; }).join('') +
+      '<a class="nlink dim" href="../gizlilik.html">Gizlilik</a>' +
+      '<a class="nlink dim" href="../kullanim.html">Kullanım</a>';
     Array.prototype.forEach.call(tabsEl.querySelectorAll('button[data-t]'), function (c) { c.onclick = function () { openTab(c.dataset.t); }; });
     openTab('konular');
     var hs = (location.hash || '').replace('#', '');
